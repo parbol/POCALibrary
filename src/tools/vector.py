@@ -73,6 +73,10 @@ class vector:
        x = vector(self.v[1] * v2.v[2] - self.v[2] * v2.v[1], self.v[2] * v2.v[0] - self.v[0] * v2.v[2], self.v[0] * v2.v[1] - self.v[1] * v2.v[0]) 
        return x
 
+    def cross(self, v1):
+
+        x = vector(self.v[1] * v1[2] - self.v[2] * v1[1], self.v[2] * v1[0] - self.v[0] * v1[2], self.v[0] * v1[1] - self.v[1] * v1[0])
+
     def print(self, vectortag):
 
         print('Vector:', vectortag, '-> (' + str(self.x()) + ', ' + str(self.y()) + ', ' + str(self.z()) + ')')
