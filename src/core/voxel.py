@@ -31,7 +31,6 @@ class voxel:
         self.nmuons += 1
         self.theta += theta
         self.theta2 += theta*theta
-
         
     def getMean(self):
 
@@ -40,7 +39,6 @@ class voxel:
     def getRMS(self):
 
         return np.sqrt(self.theta2/self.nmuons - (self.theta/self.nmuons)*(self.theta/self.nmuons))
-
 
     def isInside(self, p):
 

@@ -63,27 +63,16 @@ class universe:
 
     def loadData(self, filename):
 
-        for l in open(filename).readlines():
-            splittedL = l.split(',')
-            if len(splittedL) != 13:
-                continue
-            x1 = float(splittedL[0])
-            y1 = float(splittedL[1])
-            z1 = float(splittedL[2])
-            vx1 = float(splittedL[3])
-            vy1 = float(splittedL[4])
-            vz1 = float(splittedL[5])
-            x2 = float(splittedL[6])
-            y2 = float(splittedL[7])
-            z2 = float(splittedL[8])
-            vx2 = float(splittedL[9])
-            vy2 = float(splittedL[10])
-            vz2 = float(splittedL[11])
-            momentum = float(splittedL[12])
-            p1 = vector(x1, y1, z1)
-            v1 = vector(vx1, vy1, vz1)
-            p2 = vector(x2, y2, z2)
-            v2 = vector(vx2, vy2, vz2)
+        f = r.TFile(filename)
+        t = f.Get("hits")
+
+        for ev in t:
+        
+            momentum = ev.p
+            p1 = vector(ev.x1, ev.y1, ev.z1)
+            v1 = vector(ev.vx1, ev.vy1, ev.vz1)
+            p2 = vector(ev.x2, ev.y2, ev.z2)
+            v2 = vector(ev.vx2, ev.vy2, ev.vz2)
             meas1 = line(p1, v1)
             meas2 = line(p2, v2)
             # Create the muon
@@ -91,8 +80,9 @@ class universe:
             mu.setMeasurement1(meas1)
             mu.setMeasurement2(meas2)
             mu.setMomentum(momentum)
-            mu.getDiff(meas1, meas2)
-            self.muons.append(mu)
+            theta = mu.getDiff(meas1, meas2)
+            i,j,k = self.activeVol.findVoxel(mu.getPOCAPoint())
+            self.activeVol.voxels[i][j][k].update(theta)
 
    
 
