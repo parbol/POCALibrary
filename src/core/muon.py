@@ -27,7 +27,6 @@ class muon:
         xpoca2 = self.measurement2.p + (self.measurement2.p - self.measurement1.p).dot(self.measurement1.v.cross(normalVector)) * self.measurement2.v
         return 0.5 * (xpoca1 + xpoca2)
 
-        
     def setMomentum(self, p):
         self.momentum = p
         self.beta = p/np.sqrt(p**2 + self.mass**2)

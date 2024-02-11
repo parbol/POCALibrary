@@ -30,26 +30,6 @@ class universe:
         if z - Lz / 2.0 > activeVol.z - activeVol.Lz / 2.0:
             print('The active volume is not contained in the universe')
             sys.exit()
-  
-        if x - Lx / 2.0 > detector1.x - detector1.Lx / 2.0:
-            print('The detector1 is not contained in the universe')
-            sys.exit()
-        if y - Ly / 2.0 > detector1.y - detector1.Ly / 2.0:
-            print('The detector1 is not contained in the universe')
-            sys.exit()
-        if z - Lz / 2.0 > detector1.z - detector1.Lz / 2.0:
-            print('The detector1 volume is not contained in the universe')
-            sys.exit()
-
-        if x - Lx / 2.0 > detector2.x - detector2.Lx / 2.0:
-            print('The detector2 is not contained in the universe')
-            sys.exit()
-        if y - Ly / 2.0 > detector2.y - detector2.Ly / 2.0:
-            print('The detector2 is not contained in the universe')
-            sys.exit()
-        if z - Lz / 2.0 > detector2.z - detector2.Lz / 2.0:
-            print('The detector2 is not contained in the universe')
-            sys.exit()
    
         self.center = vector(x, y, z)
         self.x = x
