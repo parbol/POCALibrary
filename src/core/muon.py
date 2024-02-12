@@ -17,13 +17,14 @@ class muon:
         self.mass = 0.105
 
     def getDeltaTheta(self):
-        try:
-            return np.arccos(self.measurement1.v.dot(self.measurement2.v))
-        except:
-            self.measurement1.print()
-            self.measurement2.print()
-        return 0
-    
+        
+        costheta = self.measurement1.v.dot(self.measurement2.v)
+        if costheta > 1.0:
+            costheta = 1.0
+        elif costheta < -1.0:
+            costheta = -1.0
+        return np.arccos(costheta)
+          
          
     def POCAPoint(self):
 

@@ -35,7 +35,7 @@ class voxel:
     
     def getRMS(self):
 
-        return np.sqrt(self.theta2/self.nmuons - (self.theta/self.nmuons)*(self.theta/self.nmuons))
+        return np.sqrt(self.theta2/self.nmuons)
 
     def isInside(self, p):
 

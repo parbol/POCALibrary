@@ -43,21 +43,27 @@ class activevolume:
        
     def isInside(self, p):
 
-        if p.x < self.x - self.Lx / 2.0 and p.x > self.x + self.Lx / 2.0:
+        if p.x() < self.x - self.Lx / 2.0 or p.x() > self.x + self.Lx / 2.0:
             return False
-        if p.y < self.y - self.Ly / 2.0 and p.y > self.y + self.Ly / 2.0:
+        if p.y() < self.y - self.Ly / 2.0 or p.y() > self.y + self.Ly / 2.0:
             return False
-        if p.z < self.z - self.Lz / 2.0 and p.z > self.z + self.Lz / 2.0:
+        if p.z() < self.z - self.Lz / 2.0 or p.z() > self.z + self.Lz / 2.0:
             return False
         return True
     
     def findVoxel(self, point):
-        for ix in range(0, self.nx):
-            for iy in range(0, self.ny):
-                for iz in range(0, self.nz):
-                    if self.voxels[ix][iy][iz].isInside(point):
-                        return ix,iy,iz
-        return -1,-1,-1 
+ 
+        if not self.isInside(point):
+            return -1,-1,-1
+        x = point.x() + self.Lx/2.0
+        y = point.y() + self.Ly/2.0
+        z = point.z() + self.Lz/2.0
+
+        i = int(x/self.stepx)
+        j = int(y/self.stepy)
+        k = int(z/self.stepz)
+
+        return i,j,k
 
     def print(self):
 

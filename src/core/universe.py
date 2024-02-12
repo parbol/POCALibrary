@@ -2,6 +2,14 @@ from src.core.muon import muon
 from src.core.activevolume import activevolume
 from src.tools.vector import vector
 from src.tools.line import line
+
+import matplotlib as mpl
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+import numpy as np
+
 import ROOT as r
 import sys
 
@@ -56,12 +64,74 @@ class universe:
             mu.setMeasurement2(meas2)
             mu.setMomentum(momentum)
             theta = mu.getDeltaTheta()
+            
+            if (meas1.v - meas2.v).norm() < 1e-7:
+                continue            
+            
             i,j,k = self.activeVol.findVoxel(mu.POCAPoint())
+            
             if i == -1 and j == -1 and k == -1:
                 continue
+
             self.activeVol.voxels[i][j][k].update(theta)
 
-   
+    def toNumpy(self):
+
+        mat = []
+        for i in range(self.activeVol.nx):
+            ly = []
+            for j in range(self.activeVol.ny):
+                lz = []
+                for k in range(self.activeVol.nz):
+                    a = 0
+                    print(self.activeVol.voxels[i][j][k].nmuons)
+                    if self.activeVol.voxels[i][j][k].nmuons != 0:
+                        a = self.activeVol.voxels[i][j][k].getRMS()
+                    lz.append(a)
+                ly.append(lz)
+            mat.append(ly)
+        
+        return np.asarray(mat)
+
+
+    def makePlot3D(self, p):
+
+        mat = self.toNumpy()   
+        
+        #Color normalization
+        norm = mpl.colors.Normalize(vmin=0.0, vmax=0.9)
+        cmap = cm.inferno
+        m = cm.ScalarMappable(norm=norm, cmap=cmap)
+
+        # Create axis
+        axes = [self.activeVol.nx, self.activeVol.ny, self.activeVol.nz]
+
+        # Create Data
+        data = np.ones(axes, dtype=np.bool_)
+
+        # Control Transparency
+        alpha = 0.5
+
+        # Control colour
+        colors = np.empty(axes + [4], dtype=np.float32)
+        edgecolors = np.empty(axes + [4], dtype=np.float32)
+        for i, col in enumerate(colors):
+            for j, col2 in enumerate(col):
+                for k, col3 in enumerate(col2):
+                    rgbcol = m.to_rgba(mat[i][j][k])
+                    colors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], alpha]
+                    edgecolors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], 1.0]
+
+
+        # Plot figure
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Voxels is used to customizations of the
+        # sizes, positions and colors.
+        ax.voxels(data, facecolors=colors, edgecolors=edgecolors)
+        fig.savefig('image_' + str(p) + '.png')
+
 
     def print(self):
         print('------------------Universe----------------')
