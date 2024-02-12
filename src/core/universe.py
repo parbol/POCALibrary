@@ -110,7 +110,7 @@ class universe:
         data = np.ones(axes, dtype=np.bool_)
 
         # Control Transparency
-        alpha = 0.5
+        alpha = 0.2
 
         # Control colour
         colors = np.empty(axes + [4], dtype=np.float32)
@@ -120,7 +120,7 @@ class universe:
                 for k, col3 in enumerate(col2):
                     rgbcol = m.to_rgba(mat[i][j][k])
                     colors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], alpha]
-                    edgecolors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], 1.0]
+                    edgecolors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], 0]
 
 
         # Plot figure
