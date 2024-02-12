@@ -25,9 +25,11 @@ class vector:
         return self.v[2]
 
     def thetax(self):
+        
         return np.arctan2(self.v[0], self.v[2])
 
     def thetay(self): 
+        
         return np.arctan2(self.v[1], self.v[2])
 
     def dphi(self, other):
@@ -59,23 +61,28 @@ class vector:
        x = vector(self.v[0]*k, self.v[1]*k, self.v[2]*k)
        return x
 
+
     def __truediv__(self, k):
 
        x = vector(self.v[0]/k, self.v[1]/k, self.v[2]/k)
        return x
 
+
     def dot(self, v2):
 
        return self.v[0] * v2.v[0] + self.v[1] * v2.v[1] + self.v[2] * v2.v[2]
-    
+
+
     def __xor__(self, v2):
 
        x = vector(self.v[1] * v2.v[2] - self.v[2] * v2.v[1], self.v[2] * v2.v[0] - self.v[0] * v2.v[2], self.v[0] * v2.v[1] - self.v[1] * v2.v[0]) 
        return x
 
+
     def cross(self, v1):
 
-        x = vector(self.v[1] * v1[2] - self.v[2] * v1[1], self.v[2] * v1[0] - self.v[0] * v1[2], self.v[0] * v1[1] - self.v[1] * v1[0])
+        x = vector(self.v[1] * v1.v[2] - self.v[2] * v1.v[1], self.v[2] * v1.v[0] - self.v[0] * v1.v[2], self.v[0] * v1.v[1] - self.v[1] * v1.v[0])
+        return x
 
     def print(self, vectortag):
 

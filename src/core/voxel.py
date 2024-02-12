@@ -7,7 +7,7 @@ import numpy as np
 
 class voxel:
 
-    def __init__(self, x, y, z, Lx, Ly, Lz, isFixed, blockId):
+    def __init__(self, x, y, z, Lx, Ly, Lz):
 
         self.p = vector(x, y, z)
         self.pmin = vector(x - Lx / 2.0, y - Ly / 2.0, z - Lz / 2.0) 
@@ -15,16 +15,13 @@ class voxel:
         self.nmuons = 0.0
         self.theta = 0.0
         self.theta2 = 0.0 
-        self.isFixed = isFixed
-        self.blockId = blockId 
-
+        
     def print(self, nx, ny, nz):
 
         print('------Voxel ', nx, ny, nz, '------')
         print('Position:', self.p.x(), self.p.y(), self.p.z())
         print('Size Lx:', (self.pmax.x()-self.pmin.x()), 'Size Ly:', (self.pmax.y()-self.pmin.y()), 'Size Lz:', (self.pmax.z()-self.pmin.z()))
-        print('Lambda', self.lrad)
-        print('fixed', self.isFixed)
+                
 
     def update(self, theta):
 

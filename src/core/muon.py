@@ -14,18 +14,24 @@ class muon:
         self.measurement1 = l
         self.measurement2 = l
         self.momentum = 3.0
-       
+        self.mass = 0.105
+
     def getDeltaTheta(self):
-        
-        return np.arccos(self.measurement1.v * self.measurement2.v)
+        try:
+            return np.arccos(self.measurement1.v.dot(self.measurement2.v))
+        except:
+            self.measurement1.print()
+            self.measurement2.print()
+        return 0
+    
          
     def POCAPoint(self):
 
         normalVector = self.measurement1.v.cross(self.measurement2.v)
         normalVector = normalVector / normalVector.norm()
-        xpoca1 = self.measurement1.p + (self.measurement2.p - self.measurement1.p).dot(self.measurement2.v.cross(normalVector)) * self.measurement1.v
-        xpoca2 = self.measurement2.p + (self.measurement2.p - self.measurement1.p).dot(self.measurement1.v.cross(normalVector)) * self.measurement2.v
-        return 0.5 * (xpoca1 + xpoca2)
+        xpoca1 = self.measurement1.p + self.measurement1.v * (self.measurement2.p - self.measurement1.p).dot(self.measurement2.v.cross(normalVector))
+        xpoca2 = self.measurement2.p + self.measurement2.v * (self.measurement2.p - self.measurement1.p).dot(self.measurement1.v.cross(normalVector))
+        return (xpoca1 + xpoca2) * 0.5
 
     def setMomentum(self, p):
         self.momentum = p

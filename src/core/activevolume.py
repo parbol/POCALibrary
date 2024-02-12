@@ -9,18 +9,18 @@ import numpy as np
 
 class activevolume:
 
-    def __init__(self, conf):
+    def __init__(self, x0, y0, z0, Lx, Ly, Lz, nx, ny, nz):
 
-        self.x = conf.activex
-        self.y = conf.activey
-        self.z = conf.activez
+        self.x = x0
+        self.y = y0
+        self.z = z0
         self.center = vector(self.x, self.y, self.z)
-        self.Lx = conf.activeLx
-        self.Ly = conf.activeLy
-        self.Lz = conf.activeLz
-        self.nx = conf.activenx
-        self.ny = conf.activeny
-        self.nz = conf.activenz
+        self.Lx = Lx
+        self.Ly = Ly
+        self.Lz = Lz
+        self.nx = nx
+        self.ny = ny
+        self.nz = nz
         self.stepx = self.Lx/self.nx
         self.stepy = self.Ly/self.ny
         self.stepz = self.Lz/self.nz
@@ -28,9 +28,6 @@ class activevolume:
         originy = self.y - self.Ly / 2.0
         originz = self.z - self.Lz / 2.0
         self.voxels = []
-        if len(conf.l) != self.nx * self.ny * self.nz:
-            print('The config file is not consistent')
-            sys.exit(0)
         # Creating the voxels
         for ix in range(0, self.nx):
             voxely = []
@@ -38,7 +35,7 @@ class activevolume:
                 voxelz = []
                 for iz in range(0, self.nz):
                     myVoxel = voxel(originx + self.stepx / 2.0 + ix * self.stepx, originy + self.stepy / 2.0 + iy * self.stepy, originz + self.stepz / 2.0 + iz * self.stepz, 
-                                    self.stepx, self.stepy, self.stepz, False, 0)
+                                    self.stepx, self.stepy, self.stepz)
                     voxelz.append(myVoxel)
                 voxely.append(voxelz)
             self.voxels.append(voxely)
@@ -57,8 +54,9 @@ class activevolume:
     def findVoxel(self, point):
         for ix in range(0, self.nx):
             for iy in range(0, self.ny):
-                if self.voxels[ix][iy][self.nz-1].isInside(point):
-                    return ix,iy,self.nz-1
+                for iz in range(0, self.nz):
+                    if self.voxels[ix][iy][iz].isInside(point):
+                        return ix,iy,iz
         return -1,-1,-1 
 
     def print(self):
