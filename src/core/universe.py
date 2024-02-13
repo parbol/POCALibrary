@@ -84,9 +84,10 @@ class universe:
                 lz = []
                 for k in range(self.activeVol.nz):
                     a = 0
-                    print(self.activeVol.voxels[i][j][k].nmuons)
+                    
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         a = self.activeVol.voxels[i][j][k].getRMS()
+                        print(self.activeVol.voxels[i][j][k].getRMS())
                     lz.append(a)
                 ly.append(lz)
             mat.append(ly)
@@ -94,12 +95,20 @@ class universe:
         return np.asarray(mat)
 
 
+    def makePlot2D(self, p):
+
+        mat = self.toNumpy()
+        mat2D = mat[0]
+        plt.imshow(mat2D, interpolation='none')
+        plt.savefig(p + '.png')
+      
+
     def makePlot3D(self, p):
 
         mat = self.toNumpy()   
         
         #Color normalization
-        norm = mpl.colors.Normalize(vmin=0.0, vmax=0.9)
+        norm = mpl.colors.Normalize(vmin=0.01, vmax=0.2)
         cmap = cm.inferno
         m = cm.ScalarMappable(norm=norm, cmap=cmap)
 
@@ -110,7 +119,7 @@ class universe:
         data = np.ones(axes, dtype=np.bool_)
 
         # Control Transparency
-        alpha = 0.2
+        alpha = 0.8
 
         # Control colour
         colors = np.empty(axes + [4], dtype=np.float32)
