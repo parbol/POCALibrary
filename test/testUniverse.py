@@ -11,13 +11,13 @@ if __name__ == "__main__":
     parser.add_option('-i', '--input', action='store', type='string', dest='inputFile', default='input.root', help='Source file')
     (opts, args) = parser.parse_args()
 
-    activeVol = activevolume(0.0, 0.0, 0.0, 90.0, 90.0, 30.0, 1, 50, 30)
+    activeVol = activevolume(0.0, 0.0, 0.0, 90.0, 90.0, 30.0, 45, 45, 15)
     myUniverse = universe(0.0, 0.0, 0.0, 100.0, 100.0, 50.0, activeVol)
     myUniverse.print()
 
     myUniverse.loadData(opts.inputFile)
     #myUniverse.makePlot3D('caca.png')
-    myUniverse.makePlot2D('caca')
+    myUniverse.makePlotYZ('caca')
 
 
 

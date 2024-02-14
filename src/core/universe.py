@@ -94,14 +94,78 @@ class universe:
         
         return np.asarray(mat)
 
+    def toNumpyXY(self):
 
-    def makePlot2D(self, p):
+        mat = []
+        for i in range(self.activeVol.nx):
+            maty = []
+            for j in range(self.activeVol.ny):
+                nmuonsz = 0
+                ntheta2z = 0
+                for k in range(self.activeVol.nz):            
+                    if self.activeVol.voxels[i][j][k].nmuons != 0:
+                        nmuonsz += self.activeVol.voxels[i][j][k].nmuons
+                        ntheta2z += self.activeVol.voxels[i][j][k].theta2
+                if nmuonsz != 0:
+                    maty.append(np.sqrt(ntheta2z/nmuonsz))
+                else:
+                    maty.append(0.0)
+            mat.append(maty)
+        return np.transpose(np.asarray(mat))
 
-        mat = self.toNumpy()
-        mat2D = mat[0]
-        plt.imshow(mat2D, interpolation='none')
-        plt.savefig(p + '.png')
-      
+    def toNumpyXZ(self):
+       
+        mat = []
+        for i in range(self.activeVol.nx):
+            matz = []
+            for k in range(self.activeVol.nz):
+                nmuonsz = 0
+                ntheta2z = 0
+                for j in range(self.activeVol.ny):            
+                    if self.activeVol.voxels[i][j][k].nmuons != 0:
+                        nmuonsz += self.activeVol.voxels[i][j][k].nmuons
+                        ntheta2z += self.activeVol.voxels[i][j][k].theta2
+                if nmuonsz != 0:
+                    matz.append(np.sqrt(ntheta2z/nmuonsz))
+                else:
+                    matz.append(0.0)
+            mat.append(matz)
+        
+        return np.transpose(np.asarray(mat))
+    
+
+    def toNumpyYZ(self):
+       
+        mat = []
+        for j in range(self.activeVol.ny):
+            matz = []
+            for k in range(self.activeVol.nz):
+                nmuonsz = 0
+                ntheta2z = 0
+                for i in range(self.activeVol.nx):            
+                    if self.activeVol.voxels[i][j][k].nmuons != 0:
+                        nmuonsz += self.activeVol.voxels[i][j][k].nmuons
+                        ntheta2z += self.activeVol.voxels[i][j][k].theta2
+                if nmuonsz != 0:
+                    matz.append(np.sqrt(ntheta2z/nmuonsz))
+                else:
+                    matz.append(0.0)
+            mat.append(matz)
+        
+        return np.transpose(np.asarray(mat))
+
+    
+    def makePlotYZ(self, p):
+
+        mat = self.toNumpyYZ()
+        Y = np.arange(self.activeVol.y - self.activeVol.Ly/2.0, self.activeVol.y + self.activeVol.Ly/2.0, self.activeVol.stepy)
+        Z = np.arange(self.activeVol.z - self.activeVol.Lz/2.0, self.activeVol.z + self.activeVol.Lz/2.0, self.activeVol.stepz)
+        x, y = np.meshgrid(Y, Z)
+        fig, ax = plt.subplots()
+        c = ax.pcolormesh(x, y, mat, cmap='RdBu', vmin=0, vmax=0.5)
+        fig.colorbar(c, ax=ax)
+        plt.show()
+
 
     def makePlot3D(self, p):
 
