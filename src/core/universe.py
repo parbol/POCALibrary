@@ -72,7 +72,6 @@ class universe:
             
             if i == -1 and j == -1 and k == -1:
                 continue
-
             self.activeVol.voxels[i][j][k].update(theta)
 
     def toNumpy(self):
@@ -83,11 +82,9 @@ class universe:
             for j in range(self.activeVol.ny):
                 lz = []
                 for k in range(self.activeVol.nz):
-                    a = 0
-                    
+                    a = 0                    
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         a = self.activeVol.voxels[i][j][k].getRMS()
-                        print(self.activeVol.voxels[i][j][k].getRMS())
                     lz.append(a)
                 ly.append(lz)
             mat.append(ly)
@@ -106,7 +103,7 @@ class universe:
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
-                if nmuonsz != 0:
+                if nmuonsz > 5:
                     maty.append(np.sqrt(ntheta2z/nmuonsz))
                 else:
                     maty.append(0.0)
@@ -125,7 +122,7 @@ class universe:
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
-                if nmuonsz != 0:
+                if nmuonsz > 5:
                     matz.append(np.sqrt(ntheta2z/nmuonsz))
                 else:
                     matz.append(0.0)
@@ -146,7 +143,7 @@ class universe:
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
-                if nmuonsz != 0:
+                if nmuonsz > 5:
                     matz.append(np.sqrt(ntheta2z/nmuonsz))
                 else:
                     matz.append(0.0)
@@ -162,7 +159,7 @@ class universe:
         Z = np.arange(self.activeVol.z - self.activeVol.Lz/2.0, self.activeVol.z + self.activeVol.Lz/2.0, self.activeVol.stepz)
         x, y = np.meshgrid(Y, Z)
         fig, ax = plt.subplots()
-        c = ax.pcolormesh(x, y, mat, cmap='RdBu', vmin=0, vmax=0.5)
+        c = ax.pcolormesh(x, y, mat, cmap=cm.inferno, norm=mpl.colors.LogNorm(vmin=1e-2, vmax=0.05))
         fig.colorbar(c, ax=ax)
         plt.show()
 
@@ -172,7 +169,7 @@ class universe:
         mat = self.toNumpy()   
         
         #Color normalization
-        norm = mpl.colors.Normalize(vmin=0.01, vmax=0.2)
+        norm = mpl.colors.Normalize(vmin=0.0, vmax=0.1)
         cmap = cm.inferno
         m = cm.ScalarMappable(norm=norm, cmap=cmap)
 

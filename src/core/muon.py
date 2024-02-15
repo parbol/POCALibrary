@@ -28,10 +28,17 @@ class muon:
          
     def POCAPoint(self):
 
-        normalVector = self.measurement1.v.cross(self.measurement2.v)
-        normalVector = normalVector / normalVector.norm()
-        xpoca1 = self.measurement1.p + self.measurement1.v * (self.measurement2.p - self.measurement1.p).dot(self.measurement2.v.cross(normalVector))
-        xpoca2 = self.measurement2.p + self.measurement2.v * (self.measurement2.p - self.measurement1.p).dot(self.measurement1.v.cross(normalVector))
+        ps = self.measurement1.p
+        pt = self.measurement2.p
+        vs = self.measurement1.v
+        vt = self.measurement2.v
+    
+        cross_st = vs.cross(vt)
+        cross_sst = vs.cross(cross_st)
+        DeltaR = ps-pt   
+        xpoca2 = pt - vt * DeltaR.dot(cross_sst)/(cross_st.norm())**2
+        xpoca1 = ps + vs * (xpoca2 - ps).dot(vs)/vt.dot(vs)
+            
         return (xpoca1 + xpoca2) * 0.5
 
     def setMomentum(self, p):

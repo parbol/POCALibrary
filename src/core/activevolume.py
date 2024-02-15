@@ -43,11 +43,11 @@ class activevolume:
        
     def isInside(self, p):
 
-        if p.x() < self.x - self.Lx / 2.0 or p.x() > self.x + self.Lx / 2.0:
+        if p.x() <= self.x - self.Lx / 2.0 or p.x() >= self.x + self.Lx / 2.0:
             return False
-        if p.y() < self.y - self.Ly / 2.0 or p.y() > self.y + self.Ly / 2.0:
+        if p.y() <= self.y - self.Ly / 2.0 or p.y() >= self.y + self.Ly / 2.0:
             return False
-        if p.z() < self.z - self.Lz / 2.0 or p.z() > self.z + self.Lz / 2.0:
+        if p.z() <= self.z - self.Lz / 2.0 or p.z() >= self.z + self.Lz / 2.0:
             return False
         return True
     
@@ -58,7 +58,7 @@ class activevolume:
         x = point.x() + self.Lx/2.0
         y = point.y() + self.Ly/2.0
         z = point.z() + self.Lz/2.0
-
+        
         i = int(x/self.stepx)
         j = int(y/self.stepy)
         k = int(z/self.stepz)
