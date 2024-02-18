@@ -24,6 +24,9 @@ class activevolume:
         self.stepx = self.Lx/self.nx
         self.stepy = self.Ly/self.ny
         self.stepz = self.Lz/self.nz
+        self.framex = [self.x - self.Lx/2.0, self.x + self.Lx/2.0, self.stepx]
+        self.framey = [self.y - self.Ly/2.0, self.y + self.Ly/2.0, self.stepy]
+        self.framez = [self.z - self.Lz/2.0, self.z + self.Lz/2.0, self.stepz]
         originx = self.x - self.Lx / 2.0
         originy = self.y - self.Ly / 2.0
         originz = self.z - self.Lz / 2.0

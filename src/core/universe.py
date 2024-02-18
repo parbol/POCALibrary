@@ -16,11 +16,7 @@ import sys
 class universe:
     
     # This class handles all the elements of the geometrical universe.
-    # The universe is composed by an active volume that contains the voxels
-    # and also two detectors. Even if most of the muon trajectory will go
-    # through the active volume the universe will handle the magic happening
-    # from the detector to the active volume. This is in principle conceived
-    # as a pure geometrical extrapolation. 
+    # The universe is composed by an active volume that contains the voxels. 
     def __init__(self, x0, y0, z0, Lx, Ly, Lz, activeVol):
 
         self.x = x0
@@ -63,19 +59,20 @@ class universe:
             mu.setMeasurement1(meas1)
             mu.setMeasurement2(meas2)
             mu.setMomentum(momentum)
-            theta = mu.getDeltaTheta()
+            theta = mu.getDeltaTheta()        
             
-            if (meas1.v - meas2.v).norm() < 1e-7:
-                continue            
-            
-            i,j,k = self.activeVol.findVoxel(mu.POCAPoint())
+            valid, point = mu.POCAPoint()
+            if not valid:
+                continue
+            i,j,k = self.activeVol.findVoxel(point)
             
             if i == -1 and j == -1 and k == -1:
                 continue
             self.activeVol.voxels[i][j][k].update(theta)
 
-    def toNumpy(self):
 
+    def toNumpy(self):
+        # Create a 3D numpy array with the deviations 
         mat = []
         for i in range(self.activeVol.nx):
             ly = []
@@ -91,27 +88,46 @@ class universe:
         
         return np.asarray(mat)
 
-    def toNumpyXY(self):
 
+    def toNumpyXYProject(self, threshold):
+        
+        # Project the numpy array in the XY plane
         mat = []
         for i in range(self.activeVol.nx):
             maty = []
             for j in range(self.activeVol.ny):
                 nmuonsz = 0
-                ntheta2z = 0
+                ntheta2z = 0 
                 for k in range(self.activeVol.nz):            
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
-                if nmuonsz > 5:
+                if nmuonsz > threshold:
                     maty.append(np.sqrt(ntheta2z/nmuonsz))
                 else:
                     maty.append(0.0)
             mat.append(maty)
         return np.transpose(np.asarray(mat))
 
-    def toNumpyXZ(self):
-       
+
+    def toNumpyXY(self, k, threshold):
+        
+        # Get slice k in the XY plane
+        mat = []
+        for i in range(self.activeVol.nx):
+            maty = []
+            for j in range(self.activeVol.ny):
+                if self.activeVol.voxels[i][j][k].nmuons > threshold:
+                    maty.append(self.activeVol.voxels[i][j][k].getRMS())
+                else:
+                    maty.append(0.0) 
+            mat.append(maty)
+        return np.transpose(np.asarray(mat))
+
+
+    def toNumpyXZProject(self, threshold):
+        
+        #Project the numpy array in the XZ plane
         mat = []
         for i in range(self.activeVol.nx):
             matz = []
@@ -122,17 +138,34 @@ class universe:
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
-                if nmuonsz > 5:
+                if nmuonsz > threshold:
                     matz.append(np.sqrt(ntheta2z/nmuonsz))
                 else:
                     matz.append(0.0)
             mat.append(matz)
         
         return np.transpose(np.asarray(mat))
-    
 
-    def toNumpyYZ(self):
-       
+    
+    def toNumpyXZ(self, j, threshold):
+        
+        #Get the j slice in the XZ plane
+        mat = []
+        for i in range(self.activeVol.nx):
+            matz = []
+            for k in range(self.activeVol.nz):
+                if self.activeVol.voxels[i][j][k].nmuons > threshold:
+                    matz.append(self.activeVol.voxels[i][j][k].getRMS())
+                else:
+                    matz.append(0.0) 
+            mat.append(matz)
+        
+        return np.transpose(np.asarray(mat))
+
+
+    def toNumpyYZProject(self, threshold):
+        
+        #Project the numpy array in the YZ plane
         mat = []
         for j in range(self.activeVol.ny):
             matz = []
@@ -143,28 +176,46 @@ class universe:
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
-                if nmuonsz > 5:
+                if nmuonsz > threshold:
                     matz.append(np.sqrt(ntheta2z/nmuonsz))
                 else:
                     matz.append(0.0)
             mat.append(matz)
-        
+
         return np.transpose(np.asarray(mat))
 
     
-    def makePlotYZ(self, p):
+    def toNumpyYZ(self, i, threshold):
+        
+        #Get the i slice in the YZ plane
+        mat = []
+        for j in range(self.activeVol.ny):
+            matz = []
+            for k in range(self.activeVol.nz):
+                if self.activeVol.voxels[i][j][k].nmuons > threshold:
+                    matz.append(self.activeVol.voxels[i][j][k].getRMS())
+                else:
+                    matz.append(0.0) 
+            mat.append(matz)
+        
+        return np.transpose(np.asarray(mat))
 
-        mat = self.toNumpyYZ()
+
+    def makePlot2D(self, name, framex, framey, mat, vmin_=1.0e-2, vmax_=1.0e-1):
+
         Y = np.arange(self.activeVol.y - self.activeVol.Ly/2.0, self.activeVol.y + self.activeVol.Ly/2.0, self.activeVol.stepy)
         Z = np.arange(self.activeVol.z - self.activeVol.Lz/2.0, self.activeVol.z + self.activeVol.Lz/2.0, self.activeVol.stepz)
-        x, y = np.meshgrid(Y, Z)
+        X = np.arange(framex[0], framex[1], framex[2])
+        Y = np.arange(framey[0], framey[1], framey[2])
+        x, y = np.meshgrid(X, Y)
         fig, ax = plt.subplots()
-        c = ax.pcolormesh(x, y, mat, cmap=cm.inferno, norm=mpl.colors.LogNorm(vmin=1e-2, vmax=0.05))
+        c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         fig.colorbar(c, ax=ax)
-        plt.show()
+        plt.savefig(name)
+        plt.close(fig)
 
 
-    def makePlot3D(self, p):
+    def makePlot3D(self, name):
 
         mat = self.toNumpy()   
         
@@ -192,7 +243,6 @@ class universe:
                     colors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], alpha]
                     edgecolors[i][j][k] = [rgbcol[0], rgbcol[1], rgbcol[2], 0]
 
-
         # Plot figure
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
@@ -200,7 +250,36 @@ class universe:
         # Voxels is used to customizations of the
         # sizes, positions and colors.
         ax.voxels(data, facecolors=colors, edgecolors=edgecolors)
-        fig.savefig('image_' + str(p) + '.png')
+        fig.savefig(name)
+        plt.close(fig)
+
+
+    def makeAllSlices(self, name, plane, threshold, vmin, vmax):
+
+        if plane == 'XY':
+            framex = self.activeVol.framex
+            framey = self.activeVol.framey
+            for i in range(self.activeVol.nz):
+                namei = name + '_' + str(i) + '.png'
+                mat = self.toNumpyXY(i, threshold)
+                self.makePlot2D(namei, framex, framey, mat, vmin, vmax)
+        elif plane == 'YZ':
+            framey = self.activeVol.framey
+            framez = self.activeVol.framez
+            for i in range(self.activeVol.nx):
+                namei = name + '_' + str(i) + '.png'
+                mat = self.toNumpyYZ(i, threshold)
+                self.makePlot2D(namei, framey, framez, mat, vmin, vmax)
+        elif plane == 'XZ':
+            framex = self.activeVol.framex
+            framez = self.activeVol.framez
+            for i in range(self.activeVol.ny):
+                namei = name + '_' + str(i) + '.png'
+                mat = self.toNumpyXZ(i, threshold)
+                self.makePlot2D(namei, framex, framez, mat, vmin, vmax)
+        else:
+            print('Incorrect projection')
+            sys.exit()
 
 
     def print(self):
