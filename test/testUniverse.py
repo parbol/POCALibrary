@@ -2,7 +2,20 @@ import optparse
 
 from src.core.universe import universe
 from src.core.activevolume import activevolume
+import numpy as np
+import sys
+import glob
 
+
+def parse(tag):
+
+    print(tag[0])
+    print(tag[len(tag)-1])
+
+    if tag[0] == "\"" and tag[len(tag)-1] == "\"":
+        return glob.glob(tag[1:len(tag)-1])
+    else:
+        return tag
 
 
 if __name__ == "__main__":
@@ -11,13 +24,24 @@ if __name__ == "__main__":
     parser.add_option('-i', '--input', action='store', type='string', dest='inputFile', default='input.root', help='Source file')
     (opts, args) = parser.parse_args()
 
-    activeVol = activevolume(0.0, 0.0, 0.0, 260.0, 260.0, 300.0, 52, 52, 30)
+    print(parse(opts.inputFile))
+
+    sys.exit()
+
+    activeVol = activevolume(0.0, 0.0, 0.0, 260.0, 260.0, 300.0, 104, 104, 60)
     myUniverse = universe(0.0, 0.0, 0.0, 270.0, 270.0, 310.0, activeVol)
     #myUniverse.print()
 
     myUniverse.loadData(opts.inputFile)
     #myUniverse.makePlot3D('caca.png')
-    myUniverse.makeAllSlices('XZProj', 'XZ', 3, 1.0e-2, 1.0e-1)
+    #myUniverse.makeAllSlices('XZProj', 'XZ', 3, 1.0e-2, 1.0e-1)
+    mat = myUniverse.toNumpyXZProject(5)
+    myUniverse.makePlot2D("XZProject", activeVol.framex, activeVol.framez, mat, 1.0e-2, 0.5)
+    print(mat)
+    print(np.std(mat))
+    print(np.mean(mat))
+    print(np.max(mat))
+    print(np.min(mat))
 
 
 

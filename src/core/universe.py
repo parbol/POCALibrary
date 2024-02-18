@@ -210,6 +210,8 @@ class universe:
         x, y = np.meshgrid(X, Y)
         fig, ax = plt.subplots()
         c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='goaraud', rasterized=True)
+
         fig.colorbar(c, ax=ax)
         plt.savefig(name)
         plt.close(fig)
