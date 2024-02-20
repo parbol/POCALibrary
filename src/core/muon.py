@@ -32,17 +32,18 @@ class muon:
         pt = self.measurement2.p
         vs = self.measurement1.v
         vt = self.measurement2.v
-    
+        
+        
         cross_st = vs.cross(vt)
         cross_stnorm = cross_st.norm()
         vts = vt.dot(vs)
-        if cross_stnorm < 1.0e-7 or vts < 1.0e-7:
+        if cross_stnorm < 1.0e-4 or vts < 1.0e-4:
             return False, ps
         cross_sst = vs.cross(cross_st)
         DeltaR = ps-pt   
         xpoca2 = pt - vt * DeltaR.dot(cross_sst)/cross_stnorm**2
         xpoca1 = ps + vs * (xpoca2 - ps).dot(vs)/vts
-            
+      
         return True, (xpoca1 + xpoca2) * 0.5
 
     def setMomentum(self, p):
