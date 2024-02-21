@@ -221,8 +221,12 @@ class universe:
         fig, ax = plt.subplots()
         c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='goaraud', rasterized=True)
-
-        fig.colorbar(c, ax=ax)
+        ax.set_aspect('equal')
+        plt.axis('off')
+        plt.margins(x=0,y=0)
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        #fig.colorbar(c, ax=ax)
+        plt.tight_layout()
         plt.savefig(name)
         plt.close(fig)
 
