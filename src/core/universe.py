@@ -40,35 +40,47 @@ class universe:
         self.activeVol = activeVol
         
 
-    def loadData(self, filename):
+    def loadData(self, filelist):
 
-        f = r.TFile(filename)
-        t = f.Get("globalReco")
 
-        for ev in t:
+        for filename in filelist:
+            f = r.TFile(filename)
+            t = f.Get("globalReco")
+
+            for ev in t:
         
-            momentum = ev.e1
-            p1 = vector(ev.x1, ev.y1, ev.z1)
-            v1 = vector(ev.vx1, ev.vy1, ev.vz1)
-            p2 = vector(ev.x2, ev.y2, ev.z2)
-            v2 = vector(ev.vx2, ev.vy2, ev.vz2)
-            meas1 = line(p1, v1)
-            meas2 = line(p2, v2)
-            # Create the muon
-            mu = muon()
-            mu.setMeasurement1(meas1)
-            mu.setMeasurement2(meas2)
-            mu.setMomentum(momentum)
-            thetax, thetay = mu.getDeltaTheta()        
+                if ev.type1 != 3 or ev.type2 != 3:
+                    continue
+                momentum = ev.e1
+                if np.isnan(ev.vx1) or np.isnan(ev.vy1) or np.isnan(ev.vz1):
+                    continue
+                if np.isnan(ev.x1) or np.isnan(ev.y1) or np.isnan(ev.z1):
+                    continue
+                if np.isnan(ev.vx2) or np.isnan(ev.vy2) or np.isnan(ev.vz2):
+                    continue
+                if np.isnan(ev.x2) or np.isnan(ev.y2) or np.isnan(ev.z2):
+                    continue
+                p1 = vector(ev.x1, ev.y1, ev.z1)
+                v1 = vector(ev.vx1, ev.vy1, ev.vz1)
+                p2 = vector(ev.x2, ev.y2, ev.z2)
+                v2 = vector(ev.vx2, ev.vy2, ev.vz2)
+                meas1 = line(p1, v1)
+                meas2 = line(p2, v2)
+                # Create the muon
+                mu = muon()
+                mu.setMeasurement1(meas1)
+                mu.setMeasurement2(meas2)
+                mu.setMomentum(momentum)
+                theta = mu.getDeltaTheta()        
             
-            valid, point = mu.POCAPoint()
-            if not valid:
-                continue
-            i,j,k = self.activeVol.findVoxel(point)
+                valid, point = mu.POCAPoint()
+                if not valid:
+                    continue
+                i,j,k = self.activeVol.findVoxel(point)
             
             if i == -1 and j == -1 and k == -1:
                 continue
-            self.activeVol.voxels[i][j][k].update(thetax, thetay)
+            self.activeVol.voxels[i][j][k].update(theta)
 
 
     def toNumpy(self):
@@ -209,16 +221,18 @@ class universe:
 
     def makePlot2D(self, name, framex, framey, mat, vmin_=1.0e-2, vmax_=1.0e-1):
 
-        Y = np.arange(self.activeVol.y - self.activeVol.Ly/2.0, self.activeVol.y + self.activeVol.Ly/2.0, self.activeVol.stepy)
-        Z = np.arange(self.activeVol.z - self.activeVol.Lz/2.0, self.activeVol.z + self.activeVol.Lz/2.0, self.activeVol.stepz)
         X = np.arange(framex[0], framex[1], framex[2])
         Y = np.arange(framey[0], framey[1], framey[2])
         x, y = np.meshgrid(X, Y)
         fig, ax = plt.subplots()
         c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='goaraud', rasterized=True)
-
-        fig.colorbar(c, ax=ax)
+        ax.set_aspect('equal')
+        plt.axis('off')
+        plt.margins(x=0,y=0)
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        #fig.colorbar(c, ax=ax)
+        plt.tight_layout()
         plt.savefig(name)
         plt.close(fig)
 
@@ -260,6 +274,15 @@ class universe:
         ax.voxels(data, facecolors=colors, edgecolors=edgecolors)
         fig.savefig(name)
         plt.close(fig)
+
+    def makeAllProjections(self, name, threshold, vmin, vmax):
+        
+        matxy = self.toNumpyXYProject(threshold)
+        self.makePlot2D("XY_" + name, self.activeVol.framex, self.activeVol.framey, matxy, vmin, vmax)
+        matxz = self.toNumpyXZProject(threshold)
+        self.makePlot2D("XZ_" + name, self.activeVol.framex, self.activeVol.framez, matxz, vmin, vmax)
+        matyz = self.toNumpyYZProject(threshold)
+        self.makePlot2D("YZ_" + name, self.activeVol.framey, self.activeVol.framez, matyz, vmin, vmax)
 
 
     def makeAllSlices(self, name, plane, threshold, vmin, vmax):
