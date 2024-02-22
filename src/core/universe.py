@@ -71,7 +71,7 @@ class universe:
                 mu.setMeasurement1(meas1)
                 mu.setMeasurement2(meas2)
                 mu.setMomentum(momentum)
-                theta = mu.getDeltaTheta()        
+                thetax, thetay = mu.getDeltaTheta()        
             
                 valid, point = mu.POCAPoint()
                 if not valid:
@@ -80,7 +80,7 @@ class universe:
             
             if i == -1 and j == -1 and k == -1:
                 continue
-            self.activeVol.voxels[i][j][k].update(theta)
+            self.activeVol.voxels[i][j][k].update(thetax, thetay)
 
 
     def toNumpy(self):
