@@ -23,11 +23,11 @@ class voxel:
         print('Size Lx:', (self.pmax.x()-self.pmin.x()), 'Size Ly:', (self.pmax.y()-self.pmin.y()), 'Size Lz:', (self.pmax.z()-self.pmin.z()))
                 
 
-    def update(self, theta):
+    def update(self, thetax, thetay):
 
-        self.nmuons += 1
-        self.theta += theta
-        self.theta2 += theta*theta
+        self.nmuons += 2
+        self.theta += (thetax + thetay)
+        self.theta2 += (thetax*thetax + thetay * thetay)
         
     def getMean(self):
 
@@ -35,7 +35,7 @@ class voxel:
     
     def getRMS(self):
 
-        return np.sqrt(self.theta2/self.nmuons)
+        return np.sqrt(self.theta2/self.nmuons - self.getMean()**2)
 
     def isInside(self, p):
 

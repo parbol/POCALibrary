@@ -59,7 +59,7 @@ class universe:
             mu.setMeasurement1(meas1)
             mu.setMeasurement2(meas2)
             mu.setMomentum(momentum)
-            theta = mu.getDeltaTheta()        
+            thetax, thetay = mu.getDeltaTheta()        
             
             valid, point = mu.POCAPoint()
             if not valid:
@@ -68,7 +68,7 @@ class universe:
             
             if i == -1 and j == -1 and k == -1:
                 continue
-            self.activeVol.voxels[i][j][k].update(theta)
+            self.activeVol.voxels[i][j][k].update(thetax, thetay)
 
 
     def toNumpy(self):
@@ -97,13 +97,15 @@ class universe:
             maty = []
             for j in range(self.activeVol.ny):
                 nmuonsz = 0
+                nthetaz = 0
                 ntheta2z = 0 
                 for k in range(self.activeVol.nz):            
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
+                        nthetaz += self.activeVol.voxels[i][j][k].theta
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
                 if nmuonsz > threshold:
-                    maty.append(np.sqrt(ntheta2z/nmuonsz))
+                    maty.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
                 else:
                     maty.append(0.0)
             mat.append(maty)
@@ -133,13 +135,15 @@ class universe:
             matz = []
             for k in range(self.activeVol.nz):
                 nmuonsz = 0
+                nthetaz = 0
                 ntheta2z = 0
                 for j in range(self.activeVol.ny):            
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
+                        nthetaz += self.activeVol.voxels[i][j][k].theta
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
                 if nmuonsz > threshold:
-                    matz.append(np.sqrt(ntheta2z/nmuonsz))
+                    matz.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
                 else:
                     matz.append(0.0)
             mat.append(matz)
@@ -171,13 +175,15 @@ class universe:
             matz = []
             for k in range(self.activeVol.nz):
                 nmuonsz = 0
+                nthetaz = 0
                 ntheta2z = 0
                 for i in range(self.activeVol.nx):            
                     if self.activeVol.voxels[i][j][k].nmuons != 0:
                         nmuonsz += self.activeVol.voxels[i][j][k].nmuons
+                        nthetaz += self.activeVol.voxels[i][j][k].theta
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
                 if nmuonsz > threshold:
-                    matz.append(np.sqrt(ntheta2z/nmuonsz))
+                    matz.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
                 else:
                     matz.append(0.0)
             mat.append(matz)

@@ -18,13 +18,11 @@ class muon:
 
     def getDeltaTheta(self):
         
-        costheta = self.measurement1.v.dot(self.measurement2.v)
-        if costheta > 1.0:
-            costheta = 1.0
-        elif costheta < -1.0:
-            costheta = -1.0
-        return np.arccos(costheta)
-          
+        thetax1 = np.arctan2(self.measurement1.v.x(), self.measurement1.v.z())
+        thetax2 = np.arctan2(self.measurement2.v.x(), self.measurement2.v.z())
+        thetay1 = np.arctan2(self.measurement1.v.y(), self.measurement1.v.y())
+        thetay2 = np.arctan2(self.measurement2.v.y(), self.measurement2.v.y())
+        return thetax1-thetax2, thetay1-thetay2
          
     def POCAPoint(self):
 
