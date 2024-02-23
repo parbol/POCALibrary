@@ -78,9 +78,9 @@ class universe:
                     continue
                 i,j,k = self.activeVol.findVoxel(point)
             
-            if i == -1 and j == -1 and k == -1:
-                continue
-            self.activeVol.voxels[i][j][k].update(thetax, thetay)
+                if i == -1 and j == -1 and k == -1:
+                    continue
+                self.activeVol.voxels[i][j][k].update(thetax, thetay)
 
 
     def toNumpy(self):
@@ -117,7 +117,8 @@ class universe:
                         nthetaz += self.activeVol.voxels[i][j][k].theta
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
                 if nmuonsz > threshold:
-                    maty.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
+                    #maty.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
+                    maty.append(nmuonsz)
                 else:
                     maty.append(0.0)
             mat.append(maty)
@@ -155,7 +156,8 @@ class universe:
                         nthetaz += self.activeVol.voxels[i][j][k].theta
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
                 if nmuonsz > threshold:
-                    matz.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
+                    #matz.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
+                    matz.append(nmuonsz)
                 else:
                     matz.append(0.0)
             mat.append(matz)
@@ -195,7 +197,8 @@ class universe:
                         nthetaz += self.activeVol.voxels[i][j][k].theta
                         ntheta2z += self.activeVol.voxels[i][j][k].theta2
                 if nmuonsz > threshold:
-                    matz.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
+                    #matz.append(np.sqrt(ntheta2z/nmuonsz - (nthetaz/nmuonsz)**2))
+                    matz.append(nmuonsz)
                 else:
                     matz.append(0.0)
             mat.append(matz)
@@ -225,8 +228,8 @@ class universe:
         Y = np.arange(framey[0], framey[1], framey[2])
         x, y = np.meshgrid(X, Y)
         fig, ax = plt.subplots()
-        c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
-        #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='goaraud', rasterized=True)
+        #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         ax.set_aspect('equal')
         plt.axis('off')
         plt.margins(x=0,y=0)
@@ -278,6 +281,9 @@ class universe:
     def makeAllProjections(self, name, threshold, vmin, vmax):
         
         matxy = self.toNumpyXYProject(threshold)
+        print(matxy)
+        print(np.max(matxy))
+        print(np.min(matxy))
         self.makePlot2D("XY_" + name, self.activeVol.framex, self.activeVol.framey, matxy, vmin, vmax)
         matxz = self.toNumpyXZProject(threshold)
         self.makePlot2D("XZ_" + name, self.activeVol.framex, self.activeVol.framez, matxz, vmin, vmax)
