@@ -40,7 +40,7 @@ class universe:
         self.activeVol = activeVol
         
 
-    def loadData(self, filelist):
+    def loadData(self, filelist, minangle, maxangle):
 
 
         for filename in filelist:
@@ -71,8 +71,10 @@ class universe:
                 mu.setMeasurement1(meas1)
                 mu.setMeasurement2(meas2)
                 mu.setMomentum(momentum)
-                thetax, thetay = mu.getDeltaTheta()        
-            
+                thetax, thetay, theta = mu.getDeltaTheta()        
+                if thetax < minangle or theta > maxangle:
+                    continue
+                
                 valid, point = mu.POCAPoint()
                 if not valid:
                     continue
@@ -222,20 +224,34 @@ class universe:
         return np.transpose(np.asarray(mat))
 
 
+    def full_frame(width=None, height=None):
+        import matplotlib as mpl
+        mpl.rcParams['savefig.pad_inches'] = 0
+        figsize = None if width is None else (width, height)
+        fig = plt.figure(figsize=figsize)
+        ax = plt.axes([0,0,1,1], frameon=False)
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+        xplt.autoscale(tight=True)
+
     def makePlot2D(self, name, framex, framey, mat, vmin_=1.0e-2, vmax_=1.0e-1):
 
         X = np.arange(framex[0], framex[1], framex[2])
         Y = np.arange(framey[0], framey[1], framey[2])
         x, y = np.meshgrid(X, Y)
-        fig, ax = plt.subplots()
+        px = 1/plt.rcParams['figure.dpi']  # pixel in inches
+        fig, ax = plt.subplots(figsize=(512*px,512*px), frameon=False)
         #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_))
         ax.set_aspect('equal')
         plt.axis('off')
+        plt.box('off')
         plt.margins(x=0,y=0)
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        plt.autoscale(tight=True)
         #fig.colorbar(c, ax=ax)
-        plt.tight_layout()
+        #plt.tight_layout()
         plt.savefig(name)
         plt.close(fig)
 

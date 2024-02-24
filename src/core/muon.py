@@ -22,8 +22,11 @@ class muon:
         thetax2 = np.arctan2(self.measurement2.v.x(), self.measurement2.v.z())
         thetay1 = np.arctan2(self.measurement1.v.y(), self.measurement1.v.z())
         thetay2 = np.arctan2(self.measurement2.v.y(), self.measurement2.v.z())
-    
-        return thetax1-thetax2, thetay1-thetay2
+        costheta = self.measurement1.v.dot(self.measurement2.v)
+        if costheta > 1.0:
+            costheta = 1.0
+        theta = np.arccos(costheta)
+        return thetax1-thetax2, thetay1-thetay2, theta
     
          
     def POCAPoint(self):
