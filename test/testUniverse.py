@@ -24,7 +24,7 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
 
     fileList = parse(opts.inputFile)
-    activeVol = activevolume(0.0, 0.0, 0.0, 260.0, 260.0, 300.0, 65, 65, 60)
+    activeVol = activevolume(0.0, 0.0, 0.0, 270.0, 270.0, 270.0, 65, 65, 50)
     myUniverse = universe(0.0, 0.0, 0.0, 270.0, 270.0, 310.0, activeVol)
     #activeVol = activevolume(0.0, 0.0, 0.0, 90.0, 90.0, 30.0, 45, 45, 15)
     #myUniverse = universe(0.0, 0.0, 0.0, 100.0, 100.0, 35.0, activeVol)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     #myUniverse.makePlot3D('caca.png')
     #myUniverse.make2AllSlices('XZProj', 'XZ', 3, 1.0e-2, 1.0e-1)
     
-    myUniverse.makeAllProjections("Project", 2, 0, 28)
+    myUniverse.makeAllProjections("Project", 0, 0, 32.0)
     
 
 

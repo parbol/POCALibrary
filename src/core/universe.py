@@ -7,7 +7,7 @@ import matplotlib as mpl
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
+from scipy.interpolate import interp2d
 import numpy as np
 
 import ROOT as r
@@ -234,6 +234,30 @@ class universe:
         ax.get_yaxis().set_visible(False)
         xplt.autoscale(tight=True)
 
+    
+    def makePlot2DTwo(self, name, framex, framey, mat, vmin=1.0e-2, vmax=1.0e-1):
+        
+        X = np.arange(framex[0], framex[1], framex[2])
+        Y = np.arange(framey[0], framey[1], framey[2])
+        x, y = np.meshgrid(X, Y)
+        px = 1/plt.rcParams['figure.dpi']  # pixel in inches
+        fig, ax = plt.subplots(figsize=(512*px,512*px), frameon=False)
+        #c = ax.pcolormesh(x, y, mat, cmap=cm.binary, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        f = interp2d(x, y, mat, kind='cubic')
+        Xnew = np.arange(framex[0], framex[1], framex[2])
+        Ynew = np.arange(framey[0], framey[1], framey[2])
+        data1 = f(Xnew, Ynew)
+        Xn, Yn = np.meshgrid(Xnew, Ynew)
+        ax.pcolormesh(Xn, Yn, data1, cmap='Greys')
+        plt.axis('off')
+        plt.box('off')
+        plt.margins(x=0,y=0)
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
+        #fig.colorbar(c, ax=ax)
+        #plt.tight_layout()
+        plt.savefig(name)
+        plt.close(fig)
+
     def makePlot2D(self, name, framex, framey, mat, vmin_=1.0e-2, vmax_=1.0e-1):
 
         X = np.arange(framex[0], framex[1], framex[2])
@@ -242,7 +266,7 @@ class universe:
         px = 1/plt.rcParams['figure.dpi']  # pixel in inches
         fig, ax = plt.subplots(figsize=(512*px,512*px), frameon=False)
         #c = ax.pcolormesh(x, y, mat, cmap=cm.binary, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
-        c = ax.pcolormesh(x, y, mat, cmap=cm.binary, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        c = ax.pcolormesh(x, y, mat, cmap=cm.Greys, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_))
         #ax.set_aspect('equal')
         plt.axis('off')
@@ -299,11 +323,11 @@ class universe:
         print(matxy)
         print(np.max(matxy))
         print(np.min(matxy))
-        self.makePlot2D("XY_" + name, self.activeVol.framex, self.activeVol.framey, matxy, vmin, vmax)
+        self.makePlot2DTwo("XY_" + name, self.activeVol.framex, self.activeVol.framey, matxy, vmin, vmax)
         matxz = self.toNumpyXZProject(threshold)
-        self.makePlot2D("XZ_" + name, self.activeVol.framex, self.activeVol.framez, matxz, vmin, vmax)
+        self.makePlot2DTwo("XZ_" + name, self.activeVol.framex, self.activeVol.framez, matxz, vmin, vmax)
         matyz = self.toNumpyYZProject(threshold)
-        self.makePlot2D("YZ_" + name, self.activeVol.framey, self.activeVol.framez, matyz, vmin, vmax)
+        self.makePlot2DTwo("YZ_" + name, self.activeVol.framey, self.activeVol.framez, matyz, vmin, vmax)
 
 
     def makeAllSlices(self, name, plane, threshold, vmin, vmax):
