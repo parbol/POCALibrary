@@ -31,11 +31,11 @@ if __name__ == "__main__":
     #myUniverse.print()
 
 
-    myUniverse.loadData(fileList, 0.05, 0.5)
+    myUniverse.loadData(fileList, 0.05, 0.2)
     #myUniverse.makePlot3D('caca.png')
     #myUniverse.make2AllSlices('XZProj', 'XZ', 3, 1.0e-2, 1.0e-1)
     
-    myUniverse.makeAllProjections("Project", 2, 0, 30)
+    myUniverse.makeAllProjections("Project", 2, 0, 28)
     
 
 

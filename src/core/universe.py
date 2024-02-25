@@ -241,8 +241,8 @@ class universe:
         x, y = np.meshgrid(X, Y)
         px = 1/plt.rcParams['figure.dpi']  # pixel in inches
         fig, ax = plt.subplots(figsize=(512*px,512*px), frameon=False)
-        #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
-        c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        #c = ax.pcolormesh(x, y, mat, cmap=cm.binary, norm=mpl.colors.LogNorm(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
+        c = ax.pcolormesh(x, y, mat, cmap=cm.binary, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_), shading='gouraud', rasterized=True)
         #c = ax.pcolormesh(x, y, mat, cmap=cm.plasma, norm=mpl.colors.Normalize(vmin=vmin_, vmax=vmax_))
         #ax.set_aspect('equal')
         plt.axis('off')
